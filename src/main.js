@@ -3,12 +3,9 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Axios from "axios";
-import { Button, Spin, Input } from "ant-design-vue";
+import Antd from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
-
-Vue.component(Button.name, Button);
-Vue.component(Spin.name, Spin);
-Vue.component(Input.name, Input);
+Vue.use(Antd);
 
 Vue.config.productionTip = false;
 
@@ -16,7 +13,7 @@ Vue.config.productionTip = false;
 //不需要每次都 import一下 axios了，直接使用 $axios 即可
 Vue.prototype.$axios = Axios;
 //使每次请求都会带一个 /api 前缀
-// Axios.defaults.baseURL = "http://localhost:8024/api";
+Axios.defaults.baseURL = "http://localhost:8024/api";
 
 new Vue({
   router,

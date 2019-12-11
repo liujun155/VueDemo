@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <!-- <img alt="Vue logo" src="../assets/logo.png" /> -->
-    <HelloWorld msg="淘口令转换工具" />
+    <HelloWorld msg="Hello Vue." />
   </div>
 </template>
 
