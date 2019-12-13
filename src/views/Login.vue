@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <div class="loginDiv">
+    <div class="loginDiv" v-if="isLogin">
       <h2 style="font-weight: bold;">个人管理系统</h2>
       <a-form
         id="components-form-demo-normal-login"
@@ -26,7 +26,11 @@
             v-decorator="[
               'password',
               {
-                rules: [{ required: true, message: '请输入密码!' }]
+                rules: [
+                  { required: true, message: '请输入密码!' },
+                  { min: 6, message: '密码最少6位!' },
+                  { max: 12, message: '密码最长12位!' }
+                ]
               }
             ]"
             type="password"
@@ -42,7 +46,7 @@
               'remember',
               {
                 valuePropName: 'checked',
-                initialValue: false
+                initialValue: true
               }
             ]"
           >
@@ -59,18 +63,24 @@
           >
             登录
           </a-button>
-          <a class="login-form-left" href="">
+          <a class="login-form-left" @click="regBtn">
             注册
           </a>
         </a-form-item>
       </a-form>
     </div>
+    <Register v-else @func="fromRegister"></Register>
   </div>
 </template>
 
 <script>
+import Register from "@/components/RegisterUser.vue";
+
 export default {
   name: "login",
+  components: {
+    Register
+  },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "normal_login" });
   },
@@ -79,7 +89,9 @@ export default {
   },
   data() {
     return {
-      loginLoad: false
+      loginLoad: false,
+      truePswd: "",
+      isLogin: true
     };
   },
   methods: {
@@ -89,27 +101,32 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           self.loginLoad = true;
+          var pswd = "";
+          if (values.password == "******") {
+            pswd = self.truePswd;
+          } else {
+            pswd = this.$md5(values.password);
+          }
           //第二个参数写成null是指只需要拼接url的情况，如果需要传其他数据，直接写成要传的对象即可
           this.$axios
             .post("/User/Login", null, {
-              params: { userName: values.userName, passWord: values.password }
+              params: {
+                userName: values.userName,
+                passWord: pswd
+              }
             })
             .then(function(response) {
               self.loginLoad = false;
               if (response.data) {
                 //记住密码
                 if (values.remember) {
-                  self.setCookie(
-                    values.userName,
-                    self.$md5(values.password),
-                    7
-                  );
+                  self.setCookie(values.userName, pswd, 90);
                 } else {
                   self.clearCookie();
                 }
-                alert("登录成功");
+                self.$message.success("登录成功");
               } else {
-                alert("用户名或密码错误");
+                self.$message.error("登录失败：用户名或密码错误");
               }
             })
             .catch(function(error) {
@@ -119,6 +136,14 @@ export default {
           console.log("Received values of form: ", values);
         }
       });
+    },
+    regBtn() {
+      let self = this;
+      self.isLogin = false;
+    },
+    fromRegister() {
+      let self = this;
+      self.isLogin = true;
     },
     //设置cookie
     setCookie(c_name, c_pwd, exdays) {
@@ -139,9 +164,14 @@ export default {
           var arr2 = arr[i].split("="); //再次切割
           //判断查找相对应的值
           if (arr2[0] == "userName") {
-            this.form.userName = arr2[1]; //保存到保存数据的地方
+            this.form.setFieldsValue({
+              userName: arr2[1] //前面的值为表单中的值
+            });
           } else if (arr2[0] == "userPwd") {
-            this.form.password = arr2[1];
+            this.truePswd = arr2[1];
+            this.form.setFieldsValue({
+              password: "******" //前面的值为表单中的值
+            });
           }
         }
       }
