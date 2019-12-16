@@ -16,14 +16,14 @@
                 'userName',
                 {
                   rules: [
-                    { required: true, message: '请输入用户名!' },
-                    { min: 3, message: '用户名最少3位!' }
+                    { required: true, message: '请输入用户名' },
+                    { min: 2, message: '用户名最少2位' }
                   ]
                 }
               ]"
               placeholder="用户名"
-            ></a-input
-          ></a-col>
+            ></a-input>
+          </a-col>
         </a-row>
       </a-form-item>
       <a-form-item>
@@ -34,7 +34,7 @@
               v-decorator="[
                 'realName',
                 {
-                  rules: [{ required: true, message: '请输入真实姓名!' }]
+                  rules: [{ required: true, message: '请输入真实姓名' }]
                 }
               ]"
               placeholder="真实姓名"
@@ -52,9 +52,9 @@
                 'password',
                 {
                   rules: [
-                    { required: true, message: '请输入密码!' },
-                    { min: 6, message: '密码最少6位!' },
-                    { max: 12, message: '密码最长12位!' }
+                    { required: true, message: '请输入密码' },
+                    { min: 6, message: '密码最少6位' },
+                    { max: 12, message: '密码最长12位' }
                   ]
                 }
               ]"
@@ -68,7 +68,9 @@
       <a-form-item>
         <a-row>
           <a-col :span="11">
-            <a-button class="login-form-button">返回</a-button>
+            <a-button class="login-form-button" @click="returnLogin">
+              返回
+            </a-button>
           </a-col>
           <a-col :span="2"></a-col>
           <a-col :span="11">
@@ -104,35 +106,50 @@ export default {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
+          var editEnt = {
+            Name: values.realName,
+            UserName: values.userName,
+            PassWord: self.$md5(values.password),
+            Sex: 1,
+            IdCardNum: "",
+            Phone: ""
+          };
           self.regLoad = true;
-          //第二个参数写成null是指只需要拼接url的情况，如果需要传其他数据，直接写成要传的对象即可
           this.$axios
-            .post("/User/AddUser", null, {
-              params: {
-                Name: "",
-                UserName: values.userName,
-                PassWord: values.password,
-                Sex: undefined,
-                IdCardNum: "",
-                Phone: ""
-              }
-            })
-            .then(function(response) {
-              self.regLoad = false;
-              if (response.data) {
-                self.$message.success("注册成功");
-                this.$emit("fromRegister");
+            .post("/User/IsExist", editEnt)
+            .then(function(res) {
+              if (!res.data) {
+                //第二个参数写成null是指只需要拼接url的情况，如果需要传其他数据，直接写成要传的对象即可
+                self.$axios
+                  .post("/User/AddUser", editEnt)
+                  .then(function(response) {
+                    self.regLoad = false;
+                    if (response.data) {
+                      self.$message.success("注册成功");
+                      self.$emit("fromRegister");
+                    } else {
+                      self.$message.error("注册失败");
+                    }
+                  })
+                  .catch(function(error) {
+                    console.log(error);
+                    self.regLoad = false;
+                  });
               } else {
-                self.$message.error("注册失败");
+                self.$message.error("用户名已存在，请重新输入");
+                self.regLoad = false;
               }
             })
-            .catch(function(error) {
-              console.log(error);
-              self.loginLoad = false;
+            .catch(function(err) {
+              console.log(err);
+              self.regLoad = false;
             });
           console.log("Received values of form: ", values);
         }
       });
+    },
+    returnLogin() {
+      this.$emit("fromRegister");
     }
   }
 };

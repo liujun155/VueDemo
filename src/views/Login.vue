@@ -13,7 +13,7 @@
             v-decorator="[
               'userName',
               {
-                rules: [{ required: true, message: '请输入用户名!' }]
+                rules: [{ required: true, message: '请输入用户名' }]
               }
             ]"
             placeholder="用户名"
@@ -27,9 +27,9 @@
               'password',
               {
                 rules: [
-                  { required: true, message: '请输入密码!' },
-                  { min: 6, message: '密码最少6位!' },
-                  { max: 12, message: '密码最长12位!' }
+                  { required: true, message: '请输入密码' },
+                  { min: 6, message: '密码最少6位' },
+                  { max: 12, message: '密码最长12位' }
                 ]
               }
             ]"
@@ -69,7 +69,7 @@
         </a-form-item>
       </a-form>
     </div>
-    <Register v-else @func="fromRegister"></Register>
+    <Register v-else @fromRegister="showLogin"></Register>
   </div>
 </template>
 
@@ -125,6 +125,9 @@ export default {
                   self.clearCookie();
                 }
                 self.$message.success("登录成功");
+                sessionStorage.setItem("isLogin", 1); // 指定登录状态
+                sessionStorage.setItem("userName", values.userName); //设置当前登录用户名
+                self.$router.push("/menuview");
               } else {
                 self.$message.error("登录失败：用户名或密码错误");
               }
@@ -141,7 +144,7 @@ export default {
       let self = this;
       self.isLogin = false;
     },
-    fromRegister() {
+    showLogin() {
       let self = this;
       self.isLogin = true;
     },
