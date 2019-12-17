@@ -1,9 +1,19 @@
 <template>
   <a-layout id="components-layout">
     <a-layout-sider :trigger="null" collapsible v-model="collapsed">
-      <div class="logo" />
-      <a-menu theme="dark" mode="inline" :defaultSelectedKeys="['1']">
-        <a-menu-item key="1">
+      <!-- <div class="logo" /> -->
+      <div
+        style="font-family:'YouYuan';font-size:18px;font-weight:bold;margin:14px;color:#fff"
+      >
+        管理系统
+      </div>
+      <a-menu
+        theme="dark"
+        mode="inline"
+        @click="menuClick"
+        :defaultSelectedKeys="['1']"
+      >
+        <a-menu-item key="userManage">
           <a-icon type="user" />
           <span>nav 1</span>
         </a-menu-item>
@@ -24,16 +34,18 @@
           :type="collapsed ? 'menu-unfold' : 'menu-fold'"
           @click="() => (collapsed = !collapsed)"
         />
-        <a-popover placement="bottom">
-          <template slot="content">
-            <p>Content</p>
-            <a-button type="primary" @click="logout">退出登录</a-button>
-          </template>
+        <a-dropdown placement="bottomLeft">
+          <a-menu slot="overlay" @click="handleMenuClick">
+            <a-menu-item key="1"><a-icon type="lock" /> 修改密码 </a-menu-item>
+            <a-menu-item key="2">
+              <a-icon type="logout" /> 退出登录
+            </a-menu-item>
+          </a-menu>
           <span class="userBar">
             <a-avatar style="margin:0 5px;background:#87d068" icon="user" />
             <span style="margin-right:5px">{{ userName }}</span>
           </span>
-        </a-popover>
+        </a-dropdown>
       </a-layout-header>
       <a-layout-content
         :style="{
@@ -43,9 +55,9 @@
           minHeight: '280px'
         }"
       >
-        Content
+        <component v-bind:is="currentTabComponent"></component>
       </a-layout-content>
-      <a-layout-footer style="text-align: center">
+      <a-layout-footer style="text-align: center;margin:10px 50px;">
         BackManage ©2019 Created by LJun
       </a-layout-footer>
     </a-layout>
@@ -56,17 +68,27 @@ export default {
   data() {
     return {
       collapsed: false,
-      userName: ""
+      userName: "",
+      currentTabComponent: ""
     };
   },
   mounted() {
     this.userName = sessionStorage.userName;
   },
   methods: {
-    logout() {
-      sessionStorage.setItem("isLogin", 0);
-      sessionStorage.removeItem("userName");
-      this.$router.push("/login");
+    menuClick(e) {
+      console.log(e.key);
+      this.currentTabComponent = "";
+    },
+    handleMenuClick(e) {
+      if (e.key == "1") {
+        console.log("click" + e);
+      } else if (e.key == "2") {
+        //退出登录
+        sessionStorage.setItem("isLogin", 0);
+        sessionStorage.removeItem("userName");
+        this.$router.push("/login");
+      }
     }
   }
 };
