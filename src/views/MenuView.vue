@@ -15,7 +15,7 @@
       >
         <a-menu-item key="userManage">
           <a-icon type="user" />
-          <span>nav 1</span>
+          <span>用户管理</span>
         </a-menu-item>
         <a-menu-item key="2">
           <a-icon type="video-camera" />
@@ -52,7 +52,7 @@
           margin: '24px 16px',
           padding: '24px',
           background: '#fff',
-          minHeight: '280px'
+          minHeight: '300px'
         }"
       >
         <component v-bind:is="currentTabComponent"></component>
@@ -64,6 +64,8 @@
   </a-layout>
 </template>
 <script>
+import userManage from "@/components/UserManage.vue";
+
 export default {
   data() {
     return {
@@ -75,10 +77,13 @@ export default {
   mounted() {
     this.userName = sessionStorage.userName;
   },
+  components: {
+    userManage
+  },
   methods: {
+    //动态组件切换
     menuClick(e) {
-      console.log(e.key);
-      this.currentTabComponent = "";
+      this.currentTabComponent = e.key;
     },
     handleMenuClick(e) {
       if (e.key == "1") {
