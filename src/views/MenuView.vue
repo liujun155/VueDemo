@@ -55,6 +55,7 @@
           minHeight: '300px'
         }"
       >
+        <!--组件动态绑定-->
         <component v-bind:is="currentTabComponent"></component>
       </a-layout-content>
       <a-layout-footer style="text-align: center;margin:10px 50px;">
