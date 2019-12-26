@@ -1,5 +1,5 @@
 <template>
-  <a-layout id="components-layout">
+  <a-layout id="components-layout" hasSider="true">
     <a-layout-sider :trigger="null" collapsible v-model="collapsed">
       <!-- <div class="logo" /> -->
       <div
@@ -11,7 +11,7 @@
         theme="dark"
         mode="inline"
         @click="menuClick"
-        :defaultSelectedKeys="['1']"
+        :defaultSelectedKeys="['userManage']"
       >
         <a-menu-item key="userManage">
           <a-icon type="user" />
@@ -52,15 +52,16 @@
           margin: '24px 16px',
           padding: '24px',
           background: '#fff',
-          minHeight: '300px'
+          minHeight: '300px',
+          overflow: 'auto'
         }"
       >
         <!--组件动态绑定-->
         <component v-bind:is="currentTabComponent"></component>
       </a-layout-content>
-      <a-layout-footer style="text-align: center;margin:10px 50px;">
+      <!-- <a-layout-footer style="text-align: center;margin:10px 50px;">
         BackManage ©2019 Created by LJun
-      </a-layout-footer>
+      </a-layout-footer> -->
     </a-layout>
   </a-layout>
 </template>
@@ -72,7 +73,7 @@ export default {
     return {
       collapsed: false,
       userName: "",
-      currentTabComponent: ""
+      currentTabComponent: "userManage"
     };
   },
   mounted() {
@@ -101,10 +102,7 @@ export default {
 </script>
 <style>
 #components-layout {
-  position: absolute;
-  width: 100%;
   height: 100%;
-  min-height: 450px;
 }
 
 .userBar {

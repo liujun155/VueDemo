@@ -15,6 +15,7 @@
       :dataSource="userList"
       :pagination="pagination"
       :loading="loading"
+      :locale="language"
       @change="handleTableChange"
       bordered
     >
@@ -26,7 +27,7 @@
         <a-divider type="vertical" />
         <a-popconfirm
           title="是否删除？"
-          @confirm="confirm"
+          @confirm="() => onDelete(record.Id)"
           okText="确定"
           cancelText="取消"
         >
@@ -53,7 +54,10 @@ const columns = [
     ],
     onFilter: (value, record) => record.Sex == value,
     width: "10%",
-    align: "center"
+    align: "center",
+    customRender(sex) {
+      return sex == 1 ? "男" : "女";
+    }
   },
   {
     title: "用户名",
@@ -69,9 +73,10 @@ const columns = [
     dataIndex: "Phone"
   },
   {
-    title: "Action",
+    title: "操作",
     key: "action",
-    scopedSlots: { customRender: "action" }
+    scopedSlots: { customRender: "action" },
+    align: "center"
   }
 ];
 
@@ -85,7 +90,8 @@ export default {
       userList: [],
       pagination: {},
       loading: false,
-      columns
+      columns,
+      language: { filterConfirm: "确定", filterReset: "重置" }
     };
   },
   methods: {
@@ -111,8 +117,6 @@ export default {
           }
         })
         .then(function(res) {
-          console.log(res.data);
-          console.log(self.columns);
           const pagination = { ...self.pagination };
           // Read total count from server
           // pagination.total = data.totalCount;
@@ -126,8 +130,21 @@ export default {
           self.loading = false;
         });
     },
-    confirm() {
-      this.$message.success("删除成功");
+    onDelete(uid) {
+      let self = this;
+      this.$axios
+        .post("/User/DeleteUser", null, {
+          params: { id: uid }
+        })
+        .then(function(res) {
+          if (res.data) {
+            self.$message.success("删除成功");
+            self.searchUsers();
+          }
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
     }
   }
 };
