@@ -67,7 +67,7 @@
       </a-layout-footer> -->
       </a-layout>
     </a-layout>
-    <changePswd :user="userName"></changePswd>
+    <changePswd :user="userName" ref="changePswd"></changePswd>
   </div>
 </template>
 <script>

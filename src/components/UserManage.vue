@@ -23,7 +23,7 @@
       {{ name.first }} {{ name.last }}
     </template> -->
       <span slot="action" slot-scope="text, record">
-        <a href="javascript:;">编辑{{ record.name }}</a>
+        <a href="javascript:;" @click="editUser">编辑{{ record.name }}</a>
         <a-divider type="vertical" />
         <a-popconfirm
           title="是否删除？"
@@ -35,6 +35,7 @@
         </a-popconfirm>
       </span>
     </a-table>
+    <editForm ref="edit"></editForm>
   </div>
 </template>
 <script>
@@ -80,9 +81,13 @@ const columns = [
   }
 ];
 
+import editForm from "@/components/EditUser.vue";
 export default {
   mounted() {
     this.searchUsers();
+  },
+  components: {
+    editForm
   },
   data() {
     return {
@@ -129,6 +134,9 @@ export default {
           console.log(error);
           self.loading = false;
         });
+    },
+    editUser() {
+      this.$refs.edit.isShow = true;
     },
     onDelete(uid) {
       let self = this;

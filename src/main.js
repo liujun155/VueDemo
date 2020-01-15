@@ -23,6 +23,7 @@ Vue.prototype.$axios = Axios;
 Vue.prototype.$md5 = md5;
 //使每次请求都会带一个 /api 前缀
 Axios.defaults.baseURL = "http://localhost:8024/api";
+// Axios.defaults.baseURL = "http://localhost:44312/api";
 
 new Vue({
   router,

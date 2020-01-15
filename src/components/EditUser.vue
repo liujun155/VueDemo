@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-modal
-      title="修改密码"
+      title="修改用户信息"
       :visible="isShow"
       :confirmLoading="confirmLoading"
       @ok="handleOk"
@@ -9,55 +9,78 @@
     >
       <a-form :form="form">
         <a-form-item
-          label="原密码"
+          label="用户名"
           :label-col="{ span: 5 }"
           :wrapper-col="{ span: 16 }"
         >
           <a-input
             v-decorator="[
-              'oldPwd',
-              { rules: [{ required: true, message: '请输入原密码' }] }
+              'userName',
+              { rules: [{ required: true, message: '请输入用户名' }] }
             ]"
-            placeholder="原密码"
           />
         </a-form-item>
         <a-form-item
-          label="新密码"
+          label="姓名"
           :label-col="{ span: 5 }"
           :wrapper-col="{ span: 16 }"
         >
           <a-input
             v-decorator="[
-              'newPwd',
+              'name',
               {
-                rules: [
-                  { required: true, message: '请输入新密码' },
-                  { min: 6, message: '密码最少6位' },
-                  { max: 12, message: '密码最长12位' }
-                ]
+                rules: [{ required: true, message: '请输入姓名' }]
               }
             ]"
-            type="password"
-            placeholder="新密码"
+            placeholder="姓名"
           />
         </a-form-item>
         <a-form-item
-          label="确认密码"
+          label="性别"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 16 }"
+        >
+          <a-select
+            v-decorator="[
+              'sex',
+              {
+                rules: [{ required: true, message: '请选择性别' }]
+              }
+            ]"
+            placeholder="性别"
+          >
+            <a-select-option value="1">男</a-select-option>
+            <a-select-option value="0">女</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="身份证号"
           :label-col="{ span: 5 }"
           :wrapper-col="{ span: 16 }"
         >
           <a-input
             v-decorator="[
-              'confirmPwd',
+              'idCardNum',
               {
-                rules: [
-                  { required: true, message: '请再次输入新密码' },
-                  { validator: checkWord } //自定义校验
-                ]
+                rules: [{ required: true, message: '请输入身份证号' }]
               }
             ]"
-            type="password"
-            placeholder="确认密码"
+            placeholder="身份证"
+          />
+        </a-form-item>
+        <a-form-item
+          label="手机号"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 16 }"
+        >
+          <a-input
+            v-decorator="[
+              'phone',
+              {
+                rules: [{ required: true, message: '请输入手机号' }]
+              }
+            ]"
+            placeholder="手机号"
           />
         </a-form-item>
       </a-form>
