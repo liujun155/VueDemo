@@ -134,6 +134,7 @@ export default {
                   .catch(function(error) {
                     console.log(error);
                     self.regLoad = false;
+                    self.$message.error("服务端发生错误");
                   });
               } else {
                 self.$message.error("用户名已存在，请重新输入");
@@ -143,6 +144,7 @@ export default {
             .catch(function(err) {
               console.log(err);
               self.regLoad = false;
+              self.$message.error("服务端发生错误");
             });
           console.log("Received values of form: ", values);
         }

@@ -23,7 +23,9 @@
       {{ name.first }} {{ name.last }}
     </template> -->
       <span slot="action" slot-scope="text, record">
-        <a href="javascript:;" @click="editUser">编辑{{ record.name }}</a>
+        <a href="javascript:;" @click="editUser(record)">
+          编辑{{ record.name }}
+        </a>
         <a-divider type="vertical" />
         <a-popconfirm
           title="是否删除？"
@@ -133,10 +135,12 @@ export default {
         .catch(function(error) {
           console.log(error);
           self.loading = false;
+          self.$message.error("服务端发生错误");
         });
     },
-    editUser() {
+    editUser(user) {
       this.$refs.edit.isShow = true;
+      this.$refs.edit.editEnt = user;
     },
     onDelete(uid) {
       let self = this;
@@ -152,6 +156,7 @@ export default {
         })
         .catch(function(err) {
           console.log(err);
+          self.$message.error("服务端发生错误");
         });
     }
   }

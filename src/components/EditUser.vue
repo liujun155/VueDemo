@@ -6,6 +6,8 @@
       :confirmLoading="confirmLoading"
       @ok="handleOk"
       @cancel="handleCancel"
+      okText="确定"
+      cancelText="取消"
     >
       <a-form :form="form">
         <a-form-item
@@ -13,12 +15,7 @@
           :label-col="{ span: 5 }"
           :wrapper-col="{ span: 16 }"
         >
-          <a-input
-            v-decorator="[
-              'userName',
-              { rules: [{ required: true, message: '请输入用户名' }] }
-            ]"
-          />
+          <a-input readOnly v-decorator="['userName']" />
         </a-form-item>
         <a-form-item
           label="姓名"
@@ -32,7 +29,7 @@
                 rules: [{ required: true, message: '请输入姓名' }]
               }
             ]"
-            placeholder="姓名"
+            placeholder="请输入姓名"
           />
         </a-form-item>
         <a-form-item
@@ -47,7 +44,7 @@
                 rules: [{ required: true, message: '请选择性别' }]
               }
             ]"
-            placeholder="性别"
+            placeholder="请选择性别"
           >
             <a-select-option value="1">男</a-select-option>
             <a-select-option value="0">女</a-select-option>
@@ -65,7 +62,7 @@
                 rules: [{ required: true, message: '请输入身份证号' }]
               }
             ]"
-            placeholder="身份证"
+            placeholder="请输入身份证号"
           />
         </a-form-item>
         <a-form-item
@@ -74,13 +71,8 @@
           :wrapper-col="{ span: 16 }"
         >
           <a-input
-            v-decorator="[
-              'phone',
-              {
-                rules: [{ required: true, message: '请输入手机号' }]
-              }
-            ]"
-            placeholder="手机号"
+            v-decorator="['phone', { rules: [{ validator: checkPhone }] }]"
+            placeholder="请输入手机号"
           />
         </a-form-item>
       </a-form>
@@ -94,54 +86,76 @@ export default {
   },
   data() {
     return {
-      oldPwd: "",
-      newPwd: "",
-      confirmPwd: "",
-      isShow: false,
-      confirmLoading: false,
-      form: this.$form.createForm(this, { name: "changePswd" })
+      editEnt: {}, //当前编辑用户实体
+      isShow: false, //是否显示
+      confirmLoading: false, //确认按钮的loading是否显示
+      form: this.$form.createForm(this, { name: "changePswd" }) //创建表单
     };
   },
+  watch: {
+    isShow(val) {
+      if (val) {
+        console.log(val);
+        //渲染后调用
+        this.$nextTick(() => {
+          this.setEditEnt();
+        });
+      }
+    }
+  },
   methods: {
+    setEditEnt() {
+      if (this.editEnt != null && this.editEnt.id != "") {
+        console.log(this.editEnt);
+        this.form.setFieldsValue({
+          userName: this.editEnt.UserName,
+          name: this.editEnt.Name,
+          sex: this.editEnt.Sex.toString(),
+          idCardNum: this.editEnt.IdCardNum,
+          phone: this.editEnt.Phone
+        });
+      }
+    },
     handleOk() {
       let self = this;
       this.confirmLoading = true;
       this.form.validateFields((err, values) => {
-        if (err) return;
+        if (err) {
+          self.confirmLoading = false;
+          return;
+        }
+        self.editEnt.Name = values.name;
+        self.editEnt.Sex = values.sex;
+        self.editEnt.IdCardNum = values.idCardNum;
+        self.editEnt.Phone = values.phone;
+        console.log(self.editEnt);
         self.$axios
-          .post("/User/ChangePassWord", null, {
-            params: {
-              userName: self.user,
-              oldPassWord: self.$md5(values.oldPwd),
-              newPassWord: self.$md5(values.newPwd)
-            }
-          })
+          .post("/User/UpdateUser", self.editEnt)
           .then(function(res) {
             if (res.data) {
               self.$message.success("修改成功");
               self.isShow = false;
-              self.form.resetFields();
               self.confirmLoading = false;
             } else {
-              self.$message.error("原密码错误，请重新输入");
+              self.$message.error("修改失败");
               self.confirmLoading = false;
             }
           })
           .catch(function(err) {
             console.log(err);
             self.confirmLoading = false;
+            self.$message.error("服务端发生错误");
           });
       });
     },
     handleCancel() {
       this.isShow = false;
-      this.form.resetFields();
     },
-    checkWord(rule, value, callback) {
-      var pwdStr = this.form.getFieldsValue().newPwd; //获取第一次输入的密码
-      var conPwdStr = this.form.getFieldsValue().confirmPwd; //获取第一次输入的密码
-      if (pwdStr != conPwdStr) {
-        callback(new Error("两次输入密码不相同"));
+    //自定义校验（检查手机号是否输入正确）
+    checkPhone(rule, value, callback) {
+      if (value != null && value != "") {
+        var reg = /^1[3456789]\d{9}$/;
+        if (!reg.test(value)) callback(new Error("手机号格式不正确"));
       } else {
         callback();
       }

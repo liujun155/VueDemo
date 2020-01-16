@@ -135,6 +135,7 @@ export default {
             .catch(function(error) {
               console.log(error);
               self.loginLoad = false;
+              self.$message.error("服务端发生错误");
             });
           console.log("Received values of form: ", values);
         }

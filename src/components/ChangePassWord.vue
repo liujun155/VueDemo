@@ -6,6 +6,8 @@
       :confirmLoading="confirmLoading"
       @ok="handleOk"
       @cancel="handleCancel"
+      okText="确定"
+      cancelText="取消"
     >
       <a-form :form="form">
         <a-form-item
@@ -84,7 +86,10 @@ export default {
       let self = this;
       this.confirmLoading = true;
       this.form.validateFields((err, values) => {
-        if (err) return;
+        if (err) {
+          self.confirmLoading = false;
+          return;
+        }
         self.$axios
           .post("/User/ChangePassWord", null, {
             params: {
@@ -107,6 +112,7 @@ export default {
           .catch(function(err) {
             console.log(err);
             self.confirmLoading = false;
+            self.$message.error("服务端发生错误");
           });
       });
     },
@@ -114,6 +120,7 @@ export default {
       this.isShow = false;
       this.form.resetFields();
     },
+    //自定义校验（检查两次密码是否输入正确）
     checkWord(rule, value, callback) {
       var pwdStr = this.form.getFieldsValue().newPwd; //获取第一次输入的密码
       var conPwdStr = this.form.getFieldsValue().confirmPwd; //获取第一次输入的密码
