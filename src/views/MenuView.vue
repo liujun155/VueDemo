@@ -14,6 +14,10 @@
           @click="menuClick"
           :defaultSelectedKeys="['userManage']"
         >
+          <!-- <a-menu-item key="homePage">
+            <a-icon type="home" />
+            <span>首页</span>
+          </a-menu-item> -->
           <a-menu-item key="userManage">
             <a-icon type="user" />
             <span>用户管理</span>
@@ -72,6 +76,7 @@
 </template>
 <script>
 import changePswd from "@/components/ChangePassWord.vue";
+import homePage from "@/components/HomePage.vue";
 import userManage from "@/components/UserManage.vue";
 
 export default {
@@ -88,12 +93,18 @@ export default {
   },
   components: {
     userManage,
+    homePage,
     changePswd
   },
   methods: {
     //动态组件切换
     menuClick(e) {
-      this.currentTabComponent = e.key;
+      try {
+        this.currentTabComponent = e.key;
+      } catch (err) {
+        console.log("菜单切换异常：" + err);
+        this.$message.error("菜单切换异常");
+      }
     },
     handleMenuClick(e) {
       if (e.key == "1") {

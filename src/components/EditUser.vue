@@ -95,7 +95,6 @@ export default {
   watch: {
     isShow(val) {
       if (val) {
-        console.log(val);
         //渲染后调用
         this.$nextTick(() => {
           this.setEditEnt();
@@ -106,7 +105,6 @@ export default {
   methods: {
     setEditEnt() {
       if (this.editEnt != null && this.editEnt.id != "") {
-        console.log(this.editEnt);
         this.form.setFieldsValue({
           userName: this.editEnt.UserName,
           name: this.editEnt.Name,
