@@ -9,13 +9,13 @@
       okText="确定"
       cancelText="取消"
     >
-      <a-form :form="form">
+      <a-form :form="editForm">
         <a-form-item
           label="用户名"
           :label-col="{ span: 5 }"
           :wrapper-col="{ span: 16 }"
         >
-          <a-input readOnly v-decorator="['userName']" />
+          <a-input readonly v-decorator="['userName']" />
         </a-form-item>
         <a-form-item
           label="姓名"
@@ -89,7 +89,7 @@ export default {
       editEnt: {}, //当前编辑用户实体
       isShow: false, //是否显示
       confirmLoading: false, //确认按钮的loading是否显示
-      form: this.$form.createForm(this, { name: "changePswd" }) //创建表单
+      editForm: this.$form.createForm(this, { name: "editUser" }) //创建表单
     };
   },
   watch: {
@@ -105,7 +105,7 @@ export default {
   methods: {
     setEditEnt() {
       if (this.editEnt != null && this.editEnt.id != "") {
-        this.form.setFieldsValue({
+        this.editForm.setFieldsValue({
           userName: this.editEnt.UserName,
           name: this.editEnt.Name,
           sex: this.editEnt.Sex.toString(),
@@ -117,7 +117,7 @@ export default {
     handleOk() {
       let self = this;
       this.confirmLoading = true;
-      this.form.validateFields((err, values) => {
+      this.editForm.validateFields((err, values) => {
         if (err) {
           self.confirmLoading = false;
           return;
@@ -154,6 +154,7 @@ export default {
       if (value != null && value != "") {
         var reg = /^1[3456789]\d{9}$/;
         if (!reg.test(value)) callback(new Error("手机号格式不正确"));
+        else callback();
       } else {
         callback();
       }
